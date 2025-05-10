@@ -8,4 +8,6 @@ namespace ControlDolarPeru
 { 
     public record FinancialEntity (int IdProvider, decimal PucharsePrice, decimal SalePrice);
 
+
+
 }

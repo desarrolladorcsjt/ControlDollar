@@ -1,0 +1,63 @@
+name: Build and Push Sunat API Image to Docker Hub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}   # Tu usuario de Docker Hub
+        password: ${{ secrets.DOCKER_PASSWORD }}   # Tu password de Docker Hub
+
+    - name: Get the latest version from Docker Hub
+      id: get_version
+      run: |
+        # Obtener la lista de tags de Docker Hub usando la Docker Registry API
+        LAST_TAG=$(curl -s "https://hub.docker.com/v2/repositories/sistemascsjt/security-api/tags/?page_size=100" | jq -r '.results[].name' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+        
+        # Si no hay ningún tag (primer push), comenzamos con la versión 1.0.0
+        if [ -z "$LAST_TAG" ]; then
+          NEW_VERSION="1.0.0"
+        else
+          # Desglosar la versión en componentes (major, minor, patch)
+          MAJOR=$(echo $LAST_TAG | cut -d'.' -f1)
+          MINOR=$(echo $LAST_TAG | cut -d'.' -f2)
+          PATCH=$(echo $LAST_TAG | cut -d'.' -f3)
+          
+          # Incrementar el número de patch
+          PATCH=$((PATCH + 1))
+          
+          # Crear la nueva versión
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+        fi
+
+        # Mostrar la nueva versión en los logs
+        echo "New version: $NEW_VERSION"
+
+        # Establecer la nueva versión como salida para usarla en otros pasos
+        echo "::set-output name=version::$NEW_VERSION"
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: ./Dockerfile   # Cambia el path si tu Dockerfile está en otro lugar
+        push: true
+        # tags: sistemascsjt/dollar-console:${{ steps.get_version.outputs.version }}   # Usar la nueva versión
+        tags: sistemascsjt/dollar-console:lastest
+
+    - name: Clean up Docker images
+      run: docker system prune -f
