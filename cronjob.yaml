@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: console-dolarscraping
+spec:
+  schedule: "*/20 * * * *"
+  concurrencyPolicy: "Forbid"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dolar
+            image: sha256:68a3dff90faf2f79163f3b2041de1e5c338d479ae6d530d77e661f6c63342641
+          restartPolicy: "Never"

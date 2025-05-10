@@ -1,0 +1,12 @@
+version: "3.9"
+services: 
+  container:
+    image: dolar_scraping 
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 150M
+        reservations:
+          memory: 20M
+    build: ./

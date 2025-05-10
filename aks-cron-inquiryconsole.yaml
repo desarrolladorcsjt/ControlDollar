@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: console-sunatinquiry
+spec:
+  schedule: "*/50 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 360
+      template:
+        metadata:
+          labels:
+            app: console-sunatinquiry
+        spec:
+          containers:
+          - name: console-sunatinquiry
+            image: "#{dockerSunatInquiryImage}#"
+            imagePullPolicy: Always
+            resources:
+              requests:
+                cpu: 150m
+                memory: 150Mi
+              limits:
+                cpu: 300m
+                memory: 300Mi
+          restartPolicy: Never
