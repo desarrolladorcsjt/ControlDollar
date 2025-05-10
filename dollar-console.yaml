@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dollar-console
+  namespace: monitoring
+  labels:
+    io.kompose.service: dollar-console
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            io.kompose.service: dollar-console
+        spec:
+          containers:
+            - name: sunat-console
+              image: sistemascsjt/dollar-console:lastest
+              ports:
+                - containerPort: 8080
+              env:
+                - name: SELENIUM_URL 
+                  value: "http://selenium-chrome:4444/wd/hub"
+                - name: BD_CONNECTION 
+                  value: "Server=192.168.1.230,1433;Database=dbSetting;User Id=sa;Password=CL1N1C4S4NJUD4ST4D30*2024;TrustServerCertificate=True;Connection Timeout=30;"                    
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: "314572800"
+                requests:
+                  memory: "20971520"
+          restartPolicy: Never    

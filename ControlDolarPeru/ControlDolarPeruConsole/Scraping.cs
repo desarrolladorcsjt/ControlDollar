@@ -23,7 +23,7 @@ namespace ControlDolarPeru.Console
             options.AddArgument("--hide-scrollbars");
             options.AddArgument("--disable-gpu");
             options.AddArgument("--log-level=3");
-            var gridUrl = new Uri("http://38.25.43.50:4444/wd/hub");
+            var gridUrl = new Uri("http://192.168.1.55:4444/wd/hub");
             var driver = new RemoteWebDriver(gridUrl, options);
             //var driver = new ChromeDriver(options);
             try
